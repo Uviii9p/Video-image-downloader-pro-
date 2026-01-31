@@ -1,0 +1,23 @@
+{
+  "name": "streamclone-universal-media",
+  "version": "1.1.0",
+  "description": "High-performance Universal Media Downloader and Player for Instagram and YouTube",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "downloader",
+    "instagram-downloader",
+    "youtube-downloader",
+    "streaming-player",
+    "media-proxy",
+    "glassmorphism"
+  ],
+  "author": "Sujal Rathod",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
