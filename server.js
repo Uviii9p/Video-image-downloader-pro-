@@ -241,19 +241,23 @@ async function getMetaInfo(url) {
     if (scontentMatch) thumbnail = scontentMatch[0];
   }
   
-  if (!videoUrl && body.includes('.mp4')) {
-    const mp4Match = body.match(/https:\/\/[^"']*?\.mp4[^"']*/i);
-    if (mp4Match) videoUrl = mp4Match[0];
+  const durationMatch = body.match(/"video_duration":\s*([\d.]+)/) || body.match(/duration["']:\s*["']PT(\d+H)?(\d+M)?(\d+S)?/);
+  let duration = null;
+  if (durationMatch) {
+    if (durationMatch[1] && !isNaN(durationMatch[1])) {
+       duration = formatDuration(parseFloat(durationMatch[1]));
+    }
   }
 
   const result = {
     title: clean(findTag('title') || findTag('description') || (titleMatch ? titleMatch[1] : null)),
     thumbnail: clean(thumbnail),
     videoUrl: clean(videoUrl),
+    duration: duration,
     type: (videoUrl || body.includes('Video') || body.includes('reel_video') || body.includes('video_duration')) ? 'video' : 'image'
   };
 
-  console.log(`📸 Scraped ${url}: Title="${result.title}" | Type=${result.type} | Thumb=${!!result.thumbnail}`);
+  console.log(`📸 Scraped ${url}: Title="${result.title}" | Type=${result.type} | Duration=${duration}`);
   return result;
 }
 
@@ -495,7 +499,7 @@ app.post('/api/analyze', async (req, res) => {
           thumbnail: meta.thumbnail,
           proxiedThumbnail: proxiedThumbnail,
           scrapedVideoUrl: proxiedVideoUrl || meta.videoUrl, // Use proxied video URL
-          duration: null,
+          duration: meta.duration || null,
           formats,
           audioAvailable: meta.type === 'video'
         });
@@ -511,7 +515,7 @@ app.post('/api/analyze', async (req, res) => {
           type: 'video',
           thumbnail: meta.thumbnail,
           proxiedThumbnail: proxiedThumbnail,
-          duration: null,
+          duration: meta.duration || null,
           formats: [
             { quality: 'Best', format: 'mp4', size: null }
           ],
