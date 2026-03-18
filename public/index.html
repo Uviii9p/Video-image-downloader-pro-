@@ -144,11 +144,11 @@
         </div>
       </div>
 
-    <!-- TeraPlay Live Section (Direct Website Integration) -->
-    <div id="teraplay-live" class="hidden">
-      <div class="teraplay-container">
-        <div class="teraplay-screen-wrap">
-          <iframe id="teraLiveIframe" src="https://teraplay.in/" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+    <!-- TeraPlay Live Section (FORCED FULL-SCREEN MODE) -->
+    <div id="teraplay-live" class="hidden" style="width: 100%; min-width: 100vw; margin-left: calc(-50vw + 50%); position: relative; z-index: 50; background: #000;">
+      <div class="teraplay-container" style="background: #000; border: none; border-radius: 0; width: 100%;">
+        <div class="teraplay-screen-wrap" style="width: 100vw; height: 85vh; min-height: 600px; position: relative;">
+          <iframe id="teraLiveIframe" src="https://teraplay.in/" style="width: 100%; height: 100%; border: none; position: absolute; inset: 0;" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
         </div>
       </div>
     </div>
