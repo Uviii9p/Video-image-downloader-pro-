@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: rgb(var(--primary));
+  --color-primary-light: rgb(var(--primary-light));
+  --color-accent: rgb(var(--accent));
+  --color-success: rgb(var(--success));
+  --color-warning: rgb(var(--warning));
+  --color-error: rgb(var(--error));
+  --color-bg-dark: rgb(var(--bg-dark));
+  
+  --animate-gradient-x: gradient-x 6s ease infinite;
+  
+  @keyframes gradient-x {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+}
+
+@layer base {
+  :root {
+    --primary: 139 92 246;
+    --primary-light: 167 139 250;
+    --accent: 34 211 238;
+    --success: 16 185 129;
+    --warning: 245 158 11;
+    --error: 239 68 68;
+    --bg-dark: 5 5 16;
+    --glass: 255 255 255 / 0.05;
+    --border-glass: 255 255 255 / 0.1;
+  }
+
+  body {
+    @apply antialiased bg-[#050510];
+    background: radial-gradient(circle at 50% 0%, #0c0a2a 0%, #050510 50%);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl shadow-xl transition-all duration-300;
+  }
+  
+  .glass-card:hover {
+    @apply border-white/20 bg-white/10 shadow-[0_0_20px_rgba(139,92,246,0.1)];
+  }
+
+  .neon-btn {
+    @apply relative overflow-hidden px-6 py-3 rounded-xl font-bold transition-all duration-300 transform scale-100 active:scale-95;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  }
+
+  .neon-btn:hover {
+    @apply -translate-y-1;
+    box-shadow: 0 0 35px rgba(139, 92, 246, 0.5);
+  }
+
+  /* Using standard CSS for complex pseudo-elements instead of @apply to ensure v4 compatibility */
+  .neon-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+    transform: skewX(-45deg) translateX(-200%);
+    transition: transform 0.7s;
+  }
+
+  .neon-btn:hover::after {
+    transform: skewX(-45deg) translateX(200%);
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#8b5cf6] via-[#34d399] to-[#22d3ee] animate-gradient-x;
+    background-size: 200% 200%;
+  }
+
+  .input-neon {
+    @apply bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none transition-all duration-300 focus:border-violet-500/50 focus:bg-white/10;
+  }
+}
+
+/* Scrollbar Style */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

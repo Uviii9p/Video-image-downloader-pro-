@@ -16,13 +16,20 @@ const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+
+// Serve Static Files (Vite dist or Legacy public)
+app.use(express.static(path.join(__dirname, 'dist')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve index.html for root
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  const distIndex = path.join(__dirname, 'dist', 'index.html');
+  if (fs.existsSync(distIndex)) {
+    res.sendFile(distIndex);
+  } else {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  }
 });
-
 // =====================================
 // HELPER FUNCTIONS
 // =====================================
@@ -614,7 +621,70 @@ app.get('/api/info', async (req, res) => {
 });
 
 // =====================================
-// API: DOWNLOAD
+// NEW: PLAYLIST ENDPOINT
+// =====================================
+app.post('/api/playlist', async (req, res) => {
+  const { url } = req.body;
+  if (!url || !isValidUrl(url)) return res.status(400).json({ error: 'Invalid URL' });
+
+  try {
+    const cmd = getYtDlpCommand();
+    const args = [
+      '--flat-playlist',
+      '--dump-single-json',
+      '--no-check-certificates',
+      url
+    ];
+
+    const child = spawn(cmd, args);
+    let output = '';
+    child.stdout.on('data', d => output += d);
+    child.on('close', (code) => {
+      if (code !== 0) return res.status(500).json({ error: 'Failed to fetch playlist' });
+      try {
+        const json = JSON.parse(output);
+        const videos = (json.entries || []).map(v => ({
+           id: v.id,
+           title: v.title,
+           url: `https://www.youtube.com/watch?v=${v.id}`,
+           duration: v.duration,
+           thumbnail: v.thumbnail || `https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg`
+        }));
+        res.json({
+          title: json.title || 'Playlist',
+          author: json.uploader || 'Various Artists',
+          total: videos.length,
+          videos
+        });
+      } catch (e) {
+        res.status(500).json({ error: 'Parsing error' });
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// =====================================
+// NEW: AI FEATURES (MOCK LOGIC)
+// =====================================
+app.post('/api/ai/analyze', async (req, res) => {
+  const { url, type } = req.body;
+  // Deep AI Analysis Simulation
+  const tags = ["#trending", "#viral", "#tech", "#pro", "#media"];
+  const summary = "This video provides a comprehensive overview of modern digital media trends, emphasizing high-quality production and user engagement metrics in a globalized tech ecosystem.";
+  const captions = [
+    { time: "0:01", text: "Welcome to the future of media." },
+    { time: "0:05", text: "Today we explore high-fidelity downloading." }
+  ];
+
+  setTimeout(() => {
+    res.json({ tags, summary, captions });
+  }, 1500);
+});
+
+// =====================================
+// ENDPOINTS
 // =====================================
 
 app.post('/api/download', async (req, res) => {
@@ -742,9 +812,12 @@ app.get('/download', async (req, res) => {
   const quality = req.query.quality || 'best';
   const format = req.query.format || 'mp4';
   
-  if (!url) return res.status(400).json({ error: 'URL is required' });
+  if (!url || url === 'undefined') {
+    console.error('❌ GET Download: Missing or undefined URL');
+    return res.status(400).json({ error: 'Valid URL is required' });
+  }
   
-  // Forward to POST handler
+  // Forward to body for shared logic potentially
   req.body = { url, quality, format };
   
   const platform = detectPlatform(url);
@@ -752,32 +825,44 @@ app.get('/download', async (req, res) => {
   const wantAudio = format === 'mp3' || format === 'audio';
   const wantImage = format === 'jpg' || format === 'image' || format === 'png';
 
-  console.log(`📥 GET Download: ${url} | Quality: ${quality} | Format: ${format}`);
+  console.log(`📥 GET Download Request: ${url.substring(0, 50)}...`);
+  console.log(`   Quality: ${quality} | Format: ${format} | Platform: ${platform}`);
 
   // Image Download logic for GET
   if (wantImage) {
     try {
       let imageUrl = url;
       if (platform === 'instagram' || platform === 'facebook' || platform === 'terabox') {
+        console.log(`   Scraping meta for image: ${platform}`);
         const meta = platform === 'terabox' ? await getTeraboxInfo(url) : await getMetaInfo(url);
         if (meta && meta.thumbnail) imageUrl = meta.thumbnail;
       }
+      
+      console.log(`   Streaming image from: ${imageUrl.substring(0, 50)}...`);
       const filename = `image_${Date.now()}.jpg`;
       res.setHeader('Content-Type', 'image/jpeg');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      
       const proto = imageUrl.startsWith('https') ? https : http;
       proto.get(imageUrl, { headers: { 'User-Agent': UA } }, (imgRes) => {
         if (imgRes.statusCode >= 300 && imgRes.statusCode < 400 && imgRes.headers.location) {
+          console.log(`   Following redirect for image...`);
           return proto.get(imgRes.headers.location, { headers: { 'User-Agent': UA } }, (res2) => { res2.pipe(res); });
         }
         imgRes.pipe(res);
-      }).on('error', () => { if (!res.headersSent) res.status(500).send('Image download failed'); });
+      }).on('error', (err) => { 
+        console.error(`   Image pipe error: ${err.message}`);
+        if (!res.headersSent) res.status(500).send('Image download failed'); 
+      });
       return;
-    } catch (e) {}
+    } catch (e) {
+      console.error(`   Image handler error: ${e.message}`);
+    }
   }
 
   try {
     if (wantAudio) {
+      console.log(`   Starting audio extraction for: ${platform}`);
       const filename = `audio_${Date.now()}.mp3`;
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
@@ -788,22 +873,27 @@ app.get('/download', async (req, res) => {
     }
 
     const formatStr = buildFormatString(quality);
+    console.log(`   Using yt-dlp format: ${formatStr}`);
 
     let filename = `video_${Date.now()}.mp4`;
     try {
+      console.log(`   Fetching filename via yt-dlp...`);
       const infoJson = execSync(
         `"${ytDlp}" -j -f "${formatStr}" --no-playlist --user-agent "${UA}" "${url}"`,
         { stdio: ['pipe', 'pipe', 'ignore'], timeout: 15000 }
       ).toString();
       const info = JSON.parse(infoJson);
       filename = `${(info.title || 'video').replace(/[\\/*?:"<>|]/g, '').substring(0, 100)}.${info.ext || 'mp4'}`;
-    } catch {
+      console.log(`   Confirmed filename: ${filename}`);
+    } catch (err) {
+      console.log(`   yt-dlp filename extract failed (${err.message}), using fallback logic`);
       // Fallback for Terabox/Instagram if yt-dlp fails
       if (platform === 'terabox' || platform === 'instagram') {
         const meta = platform === 'terabox' ? await getTeraboxInfo(url) : await getMetaInfo(url);
         if (meta && (meta.videoUrl || meta.video)) {
           const directUrl = meta.videoUrl || meta.video;
-          res.setHeader('Content-Disposition', `attachment; filename="${(meta.title || 'video').replace(/\s+/g, '_')}.mp4"`);
+          console.log(`   Using direct video URL from scraper: ${directUrl.substring(0, 50)}...`);
+          res.setHeader('Content-Disposition', `attachment; filename="${(meta.title || 'video').replace(/[^a-zA-Z0-9]/g, '_')}.mp4"`);
           const proto = directUrl.startsWith('https') ? https : http;
           return proto.get(directUrl, { headers: { 'User-Agent': UA, 'Referer': 'https://www.terabox.com/' } }, (v) => v.pipe(res));
         }
@@ -813,13 +903,17 @@ app.get('/download', async (req, res) => {
     res.setHeader('Content-Type', 'video/mp4');
     res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
 
+    console.log(`   Spawning yt-dlp download process...`);
     const proc = spawn(ytDlp, ['-f', formatStr, '--user-agent', UA, '--no-playlist', '--no-part', '--buffer-size', '1M', '-o', '-', url]);
     proc.stdout.pipe(res);
-    req.on('close', () => proc.kill());
-    proc.stderr.on('data', (d) => { if (d.toString().includes('ERROR')) console.error(`❌ ${d}`); });
+    req.on('close', () => {
+      console.log('   Client closed connection, killing process.');
+      proc.kill();
+    });
+    proc.stderr.on('data', (d) => { if (d.toString().includes('ERROR')) console.error(`❌ yt-dlp Error: ${d}`); });
 
   } catch (error) {
-    console.error(`❌ GET Download error: ${error.message}`);
+    console.error(`❌ GET Download fatal error: ${error.message}`);
     if (!res.headersSent) res.status(500).json({ error: 'Download failed' });
   }
 });
