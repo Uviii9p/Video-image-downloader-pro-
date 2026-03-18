@@ -10,8 +10,8 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/public/$1"
+      "source": "/((?!assets|favicon.ico|api|download).*)",
+      "destination": "/index.html"
     }
   ]
 }
