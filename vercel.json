@@ -8,10 +8,6 @@
     {
       "source": "/download",
       "destination": "/api/index.js"
-    },
-    {
-      "source": "/((?!assets|favicon.ico|api|download).*)",
-      "destination": "/index.html"
     }
   ]
 }
