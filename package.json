@@ -1,0 +1,27 @@
+{
+  "name": "video-image-downloader-pro",
+  "version": "2.0.0",
+  "description": "Premium Universal Media Downloader - Download videos, audio, and images from YouTube, Instagram, TikTok, and Facebook",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "downloader",
+    "instagram-downloader",
+    "youtube-downloader",
+    "tiktok-downloader",
+    "facebook-downloader",
+    "media-proxy",
+    "glassmorphism",
+    "video-downloader",
+    "audio-extractor"
+  ],
+  "author": "Sujal Rathod",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}

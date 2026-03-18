@@ -1,0 +1,17 @@
+node_modules/
+.env
+.env.local
+.DS_Store
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# App specific
+data.json
+media-downloader/
+script_new.js
+*.log
+
+# Windows specific
+thumbs.db
+Desktop.ini

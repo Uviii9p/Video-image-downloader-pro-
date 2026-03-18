@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Image Downloader Pro | Download Videos, Audio & Images</title>
+  <meta name="description" content="Premium universal media downloader. Download videos, audio, and images from YouTube, Instagram, TikTok, and Facebook with one click.">
+  <meta name="keywords" content="video downloader, youtube downloader, instagram downloader, tiktok downloader, media downloader">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- Animated Background -->
+  <div class="bg-animation">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="bg-orb bg-orb-4"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <nav class="top-nav" id="topNav">
+    <div class="nav-brand">
+      <div class="nav-logo">
+        <i data-lucide="download-cloud"></i>
+      </div>
+      <span class="nav-title">VDL Pro</span>
+    </div>
+    <div class="nav-actions">
+      <button id="batchModeToggle" class="nav-btn" title="Batch Download Mode">
+        <i data-lucide="layers"></i>
+        <span class="nav-btn-label">Batch</span>
+      </button>
+      <button id="historyNavBtn" class="nav-btn" title="Download History">
+        <i data-lucide="history"></i>
+        <span class="nav-btn-label">History</span>
+      </button>
+      <button id="themeToggle" class="nav-btn theme-toggle" title="Toggle Theme">
+        <i data-lucide="moon" class="theme-icon-dark"></i>
+        <i data-lucide="sun" class="theme-icon-light"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main App Container -->
+  <div class="app-container">
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-badge">
+        <i data-lucide="sparkles"></i>
+        <span>zAI-Powered Media Detection</span>
+      </div>
+      <h1 class="hero-title">
+        Video Image<br>
+        <span class="gradient-text">Downloader Pro</span>
+      </h1>
+      <p class="hero-subtitle">Download videos, audio & images from YouTube, Instagram, TikTok & Facebook in any quality.</p>
+      
+      <!-- Tab Switcher -->
+      <div class="tabs-container">
+        <button class="tab-btn active" data-tab="social">
+          <i data-lucide="share-2"></i>
+          <span>Social Media</span>
+        </button>
+        <button class="tab-btn" data-tab="terabox">
+          <i data-lucide="play-circle"></i>
+          <span>TeraPlay</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Platform Tags -->
+    <div class="platform-tags">
+      <div class="platform-tag" data-platform="youtube">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        <span>YouTube</span>
+      </div>
+      <div class="platform-tag" data-platform="instagram">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+        <span>Instagram</span>
+      </div>
+      <div class="platform-tag" data-platform="tiktok">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+        <span>TikTok</span>
+      </div>
+      <div class="platform-tag" data-platform="facebook">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        <span>Facebook</span>
+      </div>
+      <div class="platform-tag" data-platform="terabox">
+        <i data-lucide="play-circle"></i>
+        <span>TeraPlay</span>
+      </div>
+    </div>
+
+    <!-- URL Input Section -->
+    <div class="input-section glass-card" id="inputSection">
+      <div class="input-group">
+        <div class="input-wrapper" id="dropZone">
+          <div class="input-icon-left">
+            <i data-lucide="link-2"></i>
+          </div>
+          <input 
+            type="url" 
+            id="urlInput" 
+            class="url-input" 
+            placeholder="Paste video, image, or audio URL here..."
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button id="pasteBtn" class="input-action-btn" title="Paste from clipboard">
+            <i data-lucide="clipboard-paste"></i>
+          </button>
+          <button id="clearInputBtn" class="input-action-btn hidden" title="Clear">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div class="drop-hint hidden" id="dropHint">
+          <i data-lucide="upload-cloud"></i>
+          <span>Drop URL here</span>
+        </div>
+      </div>
+
+      <!-- Platform Detection Badge -->
+      <div class="detected-platform hidden" id="detectedPlatform">
+        <div class="platform-indicator">
+          <div class="platform-dot"></div>
+          <span id="platformName">Detecting...</span>
+        </div>
+      </div>
+
+    <!-- TeraPlay Live Section (Direct Website Integration) -->
+    <div id="teraplay-live" class="hidden">
+      <div class="teraplay-container">
+        <div class="teraplay-screen-wrap">
+          <iframe id="teraLiveIframe" src="https://teraplay.in/" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+        </div>
+      </div>
+    </div>
+
+      <!-- Action Buttons Row -->
+      <div class="input-actions">
+        <button id="analyzeBtn" class="btn btn-detect">
+          <i data-lucide="scan-search"></i>
+          <span>Detect Media</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loader-section hidden" id="loaderSection">
+      <div class="loader-card glass-card">
+        <div class="spinner">
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+        </div>
+        <p class="loader-text" id="loaderText">Analyzing media...</p>
+        <div class="loader-progress">
+          <div class="progress-bar" id="loaderProgress"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview / Results Section -->
+    <div class="results-section hidden" id="resultsSection">
+      <div class="preview-card glass-card" id="previewCard">
+        <!-- Preview Header -->
+        <div class="preview-header">
+          <div class="preview-header-left">
+            <i data-lucide="clapperboard"></i>
+            <span>Media Preview</span>
+          </div>
+          <div class="preview-header-right">
+            <button class="icon-btn" id="qrCodeBtn" title="Generate QR Code">
+              <i data-lucide="qr-code"></i>
+            </button>
+            <button class="icon-btn" id="copyLinkBtn" title="Copy Download Link">
+              <i data-lucide="copy"></i>
+            </button>
+            <button class="icon-btn" id="closeResultsBtn" title="Close">
+              <i data-lucide="x"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview Content -->
+        <div class="preview-content">
+          <div class="preview-media">
+            <img id="previewThumbnail" class="preview-thumbnail" alt="Media thumbnail" src="">
+            <div class="preview-overlay">
+              <button id="playPreviewBtn" class="play-overlay-btn">
+                <i data-lucide="play"></i>
+              </button>
+            </div>
+            <div class="preview-badges">
+              <span class="badge badge-platform hidden" id="badgePlatform"></span>
+              <span class="badge badge-duration hidden" id="badgeDuration"></span>
+              <span class="badge badge-type hidden" id="badgeType"></span>
+            </div>
+          </div>
+          <div class="preview-info">
+            <h3 class="preview-title" id="previewTitle">Video Title</h3>
+            <p class="preview-uploader hidden" id="previewUploader"></p>
+            <p class="preview-description hidden" id="previewDescription"></p>
+          </div>
+        </div>
+
+        <!-- Download Options -->
+        <div class="download-options">
+          <div class="option-group">
+            <label for="formatSelect">
+              <i data-lucide="file-video"></i>
+              Format
+            </label>
+            <select id="formatSelect" class="select-input">
+              <option value="mp4">MP4 (Video)</option>
+              <option value="mp3">MP3 (Audio Only)</option>
+            </select>
+          </div>
+          <div class="option-group">
+            <label for="qualitySelect">
+              <i data-lucide="gauge"></i>
+              Quality
+            </label>
+            <select id="qualitySelect" class="select-input">
+              <option value="best">Best Quality</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Download Button -->
+        <button id="downloadBtn" class="btn btn-download">
+          <div class="btn-content">
+            <i data-lucide="download"></i>
+            <span>Download Now</span>
+          </div>
+          <div class="btn-shine"></div>
+        </button>
+
+        <!-- Download Progress -->
+        <div class="download-progress hidden" id="downloadProgress">
+          <div class="progress-info">
+            <span id="progressText">Preparing download...</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div class="qr-modal hidden" id="qrModal">
+      <div class="qr-card glass-card">
+        <div class="qr-header">
+          <h3><i data-lucide="qr-code"></i> Share via QR Code</h3>
+          <button class="icon-btn" id="closeQrBtn"><i data-lucide="x"></i></button>
+        </div>
+        <div id="qrCanvas"></div>
+        <p class="qr-hint">Scan to open this media link</p>
+      </div>
+    </div>
+
+    <!-- Batch Download Section -->
+    <div class="batch-section hidden" id="batchSection">
+      <div class="batch-card glass-card">
+        <div class="batch-header">
+          <h3><i data-lucide="layers"></i> Batch Download</h3>
+          <button class="icon-btn" id="closeBatchBtn"><i data-lucide="x"></i></button>
+        </div>
+        <div class="batch-input-group">
+          <textarea id="batchUrls" class="batch-textarea" placeholder="Paste multiple URLs here (one per line)..." rows="5"></textarea>
+          <button id="batchAnalyzeBtn" class="btn btn-detect">
+            <i data-lucide="scan-search"></i>
+            <span>Analyze All</span>
+          </button>
+        </div>
+        <div class="batch-results" id="batchResults"></div>
+      </div>
+    </div>
+
+    <!-- History Section -->
+    <div class="history-section hidden" id="historySection">
+      <div class="history-card glass-card">
+        <div class="history-header">
+          <h3><i data-lucide="history"></i> Download History</h3>
+          <div class="history-header-actions">
+            <button class="icon-btn danger" id="clearHistoryBtn" title="Clear all">
+              <i data-lucide="trash-2"></i>
+            </button>
+            <button class="icon-btn" id="closeHistoryBtn"><i data-lucide="x"></i></button>
+          </div>
+        </div>
+        <div class="history-list scrollbar-custom" id="historyList">
+          <div class="history-empty">
+            <i data-lucide="inbox"></i>
+            <p>No downloads yet</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Messages -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Video Player Modal -->
+    <div id="playerModal" class="modal hidden">
+      <div class="modal-content glass-card">
+        <div class="modal-header">
+          <h3><i data-lucide="play-circle"></i> Media Player</h3>
+          <div class="modal-header-actions">
+            <button id="fullscreenPlayerBtn" class="icon-btn" title="Fullscreen">
+              <i data-lucide="maximize"></i>
+            </button>
+            <button id="closePlayerModal" class="icon-btn"><i data-lucide="x"></i></button>
+          </div>
+        </div>
+        <div class="modal-body">
+          <video id="modalVideo" class="modal-video" controls>Your browser does not support the video tag.</video>
+          <img id="modalImage" class="modal-image hidden" alt="Media Preview">
+          <iframe id="youtubeEmbed" class="youtube-embed hidden" width="100%" height="100%" frameborder="0" 
+            allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <i data-lucide="download-cloud"></i>
+        <span>Video Image Downloader Pro</span>
+      </div>
+      <div class="footer-links">
+        <a href="#" id="disclaimerLink">Disclaimer</a>
+        <span class="footer-divider">•</span>
+        <a href="#" id="privacyLink">Privacy Policy</a>
+        <span class="footer-divider">•</span>
+        <a href="#" id="termsLink">Terms of Service</a>
+      </div>
+      <p class="footer-copy">© 2026 Video Image Downloader Pro by Sujal Rathod. For educational use only.</p>
+    </div>
+  </footer>
+
+  <!-- Legal Modals -->
+  <div id="legalModal" class="modal hidden">
+    <div class="modal-content glass-card legal-modal">
+      <div class="modal-header">
+        <h3 id="legalTitle"><i data-lucide="shield"></i> Legal</h3>
+        <button class="icon-btn" id="closeLegalModal"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body scrollbar-custom" id="legalBody"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>
