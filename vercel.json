@@ -13,8 +13,5 @@
       "source": "/(.*)",
       "destination": "/public/$1"
     }
-  ],
-  "env": {
-    "YT_DLP_PATH": "@yt-dlp-path"
-  }
+  ]
 }
