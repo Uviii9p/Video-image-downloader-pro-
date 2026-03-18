@@ -146,8 +146,20 @@ function detectMediaType(url) {
   return 'video'; // Default assumption for social media
 }
 
+function parseDurationString(str) {
+  if (!str) return 0;
+  if (typeof str === 'number') return str;
+  const parts = str.split(":").map(Number);
+  if (parts.length === 3) {
+    return (parts[0] || 0) * 3600 + (parts[1] || 0) * 60 + (parts[2] || 0);
+  } else if (parts.length === 2) {
+    return (parts[0] || 0) * 60 + (parts[1] || 0);
+  }
+  return Number(str) || 0;
+}
+
 function formatDuration(seconds) {
-  if (!seconds || isNaN(seconds)) return null;
+  if (!seconds || seconds === 0 || isNaN(seconds)) return "0:00";
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = Math.floor(seconds % 60);
@@ -384,13 +396,31 @@ app.post('/api/analyze', async (req, res) => {
       // Try to get full info via yt-dlp
       let fullInfo = null;
       try {
+        console.log(`🔍 YouTube Deep Extract: ${url}`);
         const infoStdout = execSync(
           `"${ytDlp}" -j --no-playlist --no-warnings --user-agent "${UA}" "${url}"`,
-          { stdio: ['pipe', 'pipe', 'ignore'], timeout: 20000 }
+          { stdio: ['pipe', 'pipe', 'pipe'], timeout: 20000 }
         ).toString();
         fullInfo = JSON.parse(infoStdout);
       } catch (e) {
-        console.warn('yt-dlp info failed for YouTube, using fallback');
+        console.warn(`⚠️ yt-dlp YouTube info failed: ${e.message}`);
+        // Scraper fallback for YouTube
+        const body = await new Promise((resolve) => {
+          https.get(url, { headers: { 'User-Agent': UA } }, (res) => {
+            let d = '';
+            res.on('data', c => d += c);
+            res.on('end', () => resolve(d));
+          }).on('error', () => resolve(null));
+        });
+
+        if (body) {
+           const title = body.match(/<meta itemprop="name" content="([^"]+)"/)?.[1] || body.match(/<title>([^<]*)<\/title>/i)?.[1];
+           const uploader = body.match(/<link itemprop="name" content="([^"]+)"/)?.[1] || body.match(/"author":"([^"]+)"/)?.[1];
+           const durMatch = body.match(/"lengthSeconds":"(\d+)"/);
+           const durationValue = durMatch ? parseInt(durMatch[1]) : 0;
+           const duration = formatDuration(durationValue);
+           fullInfo = { title, uploader, duration_string: duration, thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` };
+        }
       }
 
       const formats = [];
@@ -425,19 +455,22 @@ app.post('/api/analyze', async (req, res) => {
         );
       }
 
-      return res.json({
+      const finalResponse = {
         title: fullInfo?.title || 'YouTube Video',
         thumbnail: fullInfo?.thumbnail || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-        duration: fullInfo?.duration_string || formatDuration(fullInfo?.duration) || null,
+        duration: fullInfo?.duration_string || formatDuration(fullInfo?.duration) || '0:00',
         platform: 'youtube',
         type: 'video',
         videoId,
         formats,
         audioAvailable: true,
         description: fullInfo?.description?.substring(0, 200) || null,
-        uploader: fullInfo?.uploader || fullInfo?.channel || null,
+        uploader: fullInfo?.uploader || fullInfo?.channel || 'YouTube Creator',
         viewCount: fullInfo?.view_count || null
-      });
+      };
+      
+      console.log(`✅ YouTube Responded: ${finalResponse.title} (${finalResponse.duration})`);
+      return res.json(finalResponse);
     }
 
     // For other platforms, use yt-dlp
@@ -559,11 +592,12 @@ app.post('/api/analyze', async (req, res) => {
       ? `/api/proxy-image?url=${encodeURIComponent(thumbnail)}` 
       : null;
 
+    const durVal = info.duration || parseDurationString(info.duration_string) || 0;
     res.json({
       title: info.title || 'Untitled Media',
       thumbnail: thumbnail,
       proxiedThumbnail: proxiedThumbnail,
-      duration: info.duration_string || formatDuration(info.duration) || null,
+      duration: formatDuration(durVal),
       platform,
       type: info.vcodec && info.vcodec !== 'none' ? 'video' : (info.acodec && info.acodec !== 'none' ? 'audio' : detectMediaType(url)),
       formats,
