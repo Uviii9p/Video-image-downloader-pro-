@@ -1653,17 +1653,17 @@ body {
 }
 
 .teraplay-container {
-  background: rgba(10, 5, 26, 0.95);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  box-shadow: 0 0 100px rgba(16, 185, 129, 0.1), inset 0 0 20px rgba(16, 185, 129, 0.05);
-  border-radius: 32px;
-  overflow: hidden;
+  background: #000;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
   position: relative;
+  width: 100%;
 }
 
 .teraplay-header {
-  padding: 1.5rem 2rem;
-  background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+  padding: 1rem 2rem;
+  background: rgba(16, 185, 129, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
@@ -1673,15 +1673,35 @@ body {
 .teraplay-screen-wrap {
   position: relative;
   width: 100%;
-  height: 80vh;
-  min-height: 500px;
+  height: 90vh; /* Massive 90% view height */
   background: #000;
+  overflow: visible;
 }
 
 #teraLiveIframe {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   border: none;
+  background: #000;
+}
+
+.theater-mode .app-container {
+  max-width: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.theater-mode .main-content {
+  padding: 0;
+}
+
+.theater-mode #dropZone {
+  max-width: 900px;
+  margin: 20px auto;
 }
 
 #teraIframePlaceholder {
