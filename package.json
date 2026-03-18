@@ -1,11 +1,12 @@
 {
   "name": "video-image-downloader-pro",
   "version": "2.0.0",
+  "type": "module",
   "description": "Premium Universal Media Downloader - Download videos, audio, and images from YouTube, Instagram, TikTok, and Facebook",
-  "main": "server.js",
+  "main": "server.cjs",
   "scripts": {
-    "start": "node server.js",
-    "server": "node server.js",
+    "start": "node server.cjs",
+    "server": "node server.cjs",
     "client": "vite",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build": "vite build",
