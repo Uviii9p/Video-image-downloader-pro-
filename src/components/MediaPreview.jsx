@@ -12,6 +12,7 @@ const MediaPreview = ({ data, onClose, onAddToBatch }) => {
   const [quality, setQuality] = useState('best');
   const [showAiSheet, setShowAiSheet] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Filter formats based on selected type
   const availableQualities = data.formats?.filter(f => {
@@ -49,17 +50,31 @@ const MediaPreview = ({ data, onClose, onAddToBatch }) => {
       <div className="flex flex-col lg:flex-row min-h-[500px]">
         {/* Left Section: Media Display */}
         <div className="lg:w-1/2 p-6 flex flex-col items-center justify-center bg-black/40 relative group">
-           <div className="w-full aspect-video rounded-2xl overflow-hidden relative shadow-2xl border border-white/5">
-              <img 
-                src={data.proxiedThumbnail || data.thumbnail} 
-                alt={data.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all flex items-center justify-center">
-                 <div className="w-16 h-16 rounded-full bg-primary/80 backdrop-blur-md flex items-center justify-center text-white shadow-xl translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 scale-90 group-hover:scale-100">
-                    <Play fill="currentColor" size={28} />
-                 </div>
-              </div>
+           <div className="w-full aspect-video rounded-2xl overflow-hidden relative shadow-2xl border border-white/5 bg-black">
+              {isPlaying ? (
+                <video 
+                  src={`/api/stream?url=${encodeURIComponent(data.originalUrl)}`}
+                  controls
+                  autoPlay
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <>
+                  <img 
+                    src={data.proxiedThumbnail || data.thumbnail} 
+                    alt={data.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all flex items-center justify-center">
+                    <button 
+                      onClick={() => data.type === 'video' ? setIsPlaying(true) : toast.error('Streaming not available for images')}
+                      className="w-16 h-16 rounded-full bg-primary/80 backdrop-blur-md flex items-center justify-center text-white shadow-xl translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 scale-90 group-hover:scale-100 cursor-pointer"
+                    >
+                        <Play fill="currentColor" size={28} />
+                    </button>
+                  </div>
+                </>
+              )}
            </div>
            
            <div className="mt-8 flex items-center gap-4 w-full">
