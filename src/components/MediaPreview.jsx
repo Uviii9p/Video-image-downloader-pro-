@@ -69,12 +69,22 @@ const MediaPreview = ({ data, onClose, onAddToBatch }) => {
                        <p className="text-[12px] font-black uppercase tracking-[0.5em] text-violet-400 animate-pulse">Initializing Stream</p>
                     </div>
                   )}
-                  <video 
-                    src={`/api/stream?url=${encodeURIComponent(data.originalUrl)}`}
-                    controls
-                    autoPlay
-                    className="w-full h-full object-contain relative z-10"
-                  />
+                  {data.streamUrl ? (
+                    <video 
+                      src={data.streamUrl}
+                      controls
+                      autoPlay
+                      className="w-full h-full object-contain relative z-10"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 z-20 bg-black/80 flex flex-col items-center justify-center gap-6">
+                       <Play fill="gray" size={48} className="opacity-20" />
+                       <div className="text-center px-12">
+                          <p className="text-[12px] font-black uppercase tracking-[0.3em] text-violet-400 mb-2">Streaming Offline</p>
+                          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Preview not available for this source. Proceed to download.</p>
+                       </div>
+                    </div>
+                  )}
                   <button 
                     onClick={() => setIsPlaying(false)}
                     className="absolute top-6 right-6 z-30 p-3 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/10 hover:bg-white/10 transition-all uppercase text-[10px] font-bold tracking-widest"

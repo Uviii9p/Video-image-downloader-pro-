@@ -455,9 +455,17 @@ app.post('/api/analyze', async (req, res) => {
         );
       }
 
+      // FIND PLAYABLE STREAM URL (Pre-merged formats for direct playback)
+      let ytStreamUrl = null;
+      if (fullInfo && fullInfo.formats) {
+        const playable = fullInfo.formats.find(f => f.vcodec !== 'none' && f.acodec !== 'none' && (f.ext === 'mp4' || f.ext === 'webm'));
+        if (playable) ytStreamUrl = playable.url;
+      }
+
       const finalResponse = {
         title: fullInfo?.title || 'YouTube Video',
         thumbnail: fullInfo?.thumbnail || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+        streamUrl: ytStreamUrl,
         duration: fullInfo?.duration_string || formatDuration(fullInfo?.duration) || '0:00',
         platform: 'youtube',
         type: 'video',
@@ -592,11 +600,25 @@ app.post('/api/analyze', async (req, res) => {
       ? `/api/proxy-image?url=${encodeURIComponent(thumbnail)}` 
       : null;
 
+    // FIND PLAYABLE STREAM URL (Pre-merged formats for direct playback)
+    let streamUrl = null;
+    if (info.formats) {
+      const playable = info.formats.find(f => f.vcodec !== 'none' && f.acodec !== 'none' && (f.ext === 'mp4' || f.ext === 'webm'));
+      if (playable) streamUrl = playable.url;
+    }
+
+    // IF NO DIRECT URL, FALLBACK TO PROXY STREAM
+    if (!streamUrl && (platform === 'instagram' || platform === 'facebook' || platform === 'tiktok')) {
+      const rawUrl = info.url || url;
+      streamUrl = `/api/proxy-video?url=${encodeURIComponent(rawUrl)}`;
+    }
+
     const durVal = info.duration || parseDurationString(info.duration_string) || 0;
     res.json({
       title: info.title || 'Untitled Media',
       thumbnail: thumbnail,
       proxiedThumbnail: proxiedThumbnail,
+      streamUrl: streamUrl,
       duration: formatDuration(durVal),
       platform,
       type: info.vcodec && info.vcodec !== 'none' ? 'video' : (info.acodec && info.acodec !== 'none' ? 'audio' : detectMediaType(url)),
