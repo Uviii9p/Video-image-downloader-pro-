@@ -904,13 +904,43 @@ app.get('/download', async (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
 
     console.log(`   Spawning yt-dlp download process...`);
-    const proc = spawn(ytDlp, ['-f', formatStr, '--user-agent', UA, '--no-playlist', '--no-part', '--buffer-size', '1M', '-o', '-', url]);
+    const args = [
+      '-f', formatStr,
+      '--user-agent', UA,
+      '--no-playlist',
+      '--no-part',
+      '--no-check-certificates',
+      '--buffer-size', '1M',
+      '-o', '-',
+      url
+    ];
+    
+    const proc = spawn(ytDlp, args);
     proc.stdout.pipe(res);
-    req.on('close', () => {
-      console.log('   Client closed connection, killing process.');
-      proc.kill();
+    
+    let errorLog = '';
+    proc.stderr.on('data', (d) => {
+      const msg = d.toString();
+      errorLog += msg;
+      if (msg.includes('ERROR')) console.error(`❌ yt-dlp Error: ${msg}`);
     });
-    proc.stderr.on('data', (d) => { if (d.toString().includes('ERROR')) console.error(`❌ yt-dlp Error: ${d}`); });
+
+    proc.on('close', (code) => {
+      if (code !== 0 && code !== null) {
+        console.error(`❌ yt-dlp process exited with code ${code}`);
+        console.error(`   Error details: ${errorLog}`);
+        if (!res.headersSent) res.status(500).json({ error: 'Download engine failed' });
+      } else {
+        console.log(`✅ Download process completed successfully (code ${code})`);
+      }
+    });
+
+    req.on('close', () => {
+      if (proc.exitCode === null) {
+        console.log('   Client closed connection, killing process.');
+        proc.kill();
+      }
+    });
 
   } catch (error) {
     console.error(`❌ GET Download fatal error: ${error.message}`);
@@ -927,23 +957,42 @@ app.get('/api/stream', async (req, res) => {
   if (!fileUrl) return res.status(400).send('URL required');
 
   const ytDlp = getYtDlpCommand();
-  console.log(`🎥 Streaming: ${fileUrl}`);
+  const platform = detectPlatform(fileUrl);
+  console.log(`🎥 Streaming Request: ${fileUrl} (Platform: ${platform})`);
 
   res.setHeader('Content-Type', 'video/mp4');
 
-  const proc = spawn(ytDlp, [
+  const args = [
     '--user-agent', UA,
     '--no-playlist',
     '--no-part',
+    '--no-check-certificates',
     '--buffer-size', '1M',
     '-f', buildFormatString('best'),
     '-o', '-',
     fileUrl
-  ]);
+  ];
 
+  console.log(`   Running: ${ytDlp} ${args.join(' ')}`);
+
+  const proc = spawn(ytDlp, args);
   proc.stdout.pipe(res);
-  req.on('close', () => { proc.kill(); console.log('🛑 Stream closed'); });
-  proc.stderr.on('data', (d) => { if (d.toString().includes('ERROR')) console.error(`❌ Stream: ${d}`); });
+  
+  proc.stderr.on('data', (d) => {
+    const msg = d.toString();
+    if (msg.includes('ERROR')) console.error(`❌ Stream Error: ${msg}`);
+  });
+
+  proc.on('close', (code) => {
+    console.log(`🎥 Stream process closed with code ${code}`);
+  });
+
+  req.on('close', () => {
+    if (proc.exitCode === null) {
+      proc.kill();
+      console.log('🛑 Stream killed by client');
+    }
+  });
 });
 
 // =====================================
